@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css">
+        <title>Text Display</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <div id="largeText"></div>
+            <button id="pauseButton">Pause</button>
+            <h3 id="timeleft" style="width: 20%;  font-size: 32px;"></h3>
+        </div>
+
+        <script>
+            const body = document.body;
+            body.classList.toggle("dark-theme");
+            // Retrieve input values from local storage
+            var inputText = localStorage.getItem("inputText");
+            inputText = inputText.replace(/\n/g, " ");
+            const wordCount = parseInt(localStorage.getItem("wordCount"));
+            const interval = parseInt(localStorage.getItem("interval"));
+            console.log(inputText);
+            var currentIndex = 0;
+            var current_timer = interval / 1000;
+            var isPaused = false;
+            const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+
+            if (!inputText || isNaN(wordCount) || isNaN(interval)) {
+                // Handle missing or invalid values
+                alert("Invalid input values.");
+                window.location.href = "index.html"; // Redirect to the main page
+            } else {
+                var words = inputText.split(" ");
+                var audio = new Audio(
+                    'beep.mp3');
+                const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+                const displayNextChunk = async () => {
+                    if (!isPaused && currentIndex < words.length) {
+                        const chunk = words.slice(currentIndex, currentIndex + wordCount).join(" ");
+                        document.getElementById("largeText").textContent = chunk;
+                        currentIndex += wordCount;
+                        for (let i = current_timer; i > 0; i--) {
+                            if (!isPaused && i == 1) {
+                                audio.play();
+                            }
+                            if (!isPaused) {
+                                document.getElementById("timeleft").innerHTML = "Time Left: " + (i).toString();
+                                await sleep(1000);
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                        if (!isPaused) {
+                            displayNextChunk();
+                        }
+                    } else if (currentIndex >= words.length) {
+                        document.getElementById("largeText").textContent = "End of text.";
+                    }
+                }
+
+                // Start displaying text
+                displayNextChunk();
+
+                // Add a click event listener to the pause button
+                const pauseButton = document.getElementById("pauseButton");
+                pauseButton.addEventListener("click", function () {
+                    isPaused = !isPaused; // Toggle pause state
+                    if (isPaused) {
+                        pauseButton.textContent = "Resume";
+                        current_timer = document.getElementById("timeleft").innerHTML.replace("Time Left: ", "");
+                        current_timer = Number(current_timer)
+                        pauseButton.style = "background-color: rgb(26, 26, 157)";
+                        // document.getElementById("timeleft").innerHTML = "Paused"
+                    } else {
+                        pauseButton.textContent = "Pause";
+                        pauseButton.style = "background-color: black";
+                        currentIndex -= wordCount;
+                        displayNextChunk(); // Resume displaying text
+                        current_timer = interval / 1000;
+                    }
+                });
+            }
+
+        </script>
+    </body>
+
+</html>

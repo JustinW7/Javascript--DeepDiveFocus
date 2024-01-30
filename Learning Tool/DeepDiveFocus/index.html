@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="styles.css">
+        <title>Text Display Tool</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1 style="color: green;">Justin's Learning Tool</h1>
+            <textarea id="inputText" placeholder="Enter your text here"></textarea>
+            <label for="wordCount">Number of words</label>
+            <input type="number" id="wordCount" placeholder="Number of words" value="2"
+                style="width:10%; margin-right: 20px;">
+            <label for="interval">Interval</label>
+            <input type="number" id="interval" placeholder="Interval (in seconds)" value="5"
+                style="width:10%; margin-right: 20px;">
+            <button id="startButton">Begin</button>
+        </div>
+
+        <script>
+            const body = document.body;
+            body.classList.toggle("dark-theme");
+            document.getElementById("startButton").addEventListener("click", function () {
+                const inputText = document.getElementById("inputText").value;
+                const wordCount = parseInt(document.getElementById("wordCount").value);
+                const interval = parseInt(document.getElementById("interval").value) * 1000; // Convert to milliseconds
+
+                if (!inputText || isNaN(wordCount) || isNaN(interval)) {
+                    alert("Please fill in all fields with valid values.");
+                    return;
+                }
+
+                // Store input values in local storage for the new page
+                localStorage.setItem("inputText", inputText);
+                localStorage.setItem("wordCount", wordCount);
+                localStorage.setItem("interval", interval);
+
+                window.location.href = "display.html"; // Redirect to the display page
+            });
+
+        </script>
+    </body>
+
+</html>
